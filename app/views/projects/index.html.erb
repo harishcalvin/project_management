@@ -5,17 +5,48 @@
 
   <% content_for :title, "Projects" %>
 
-  <div class="flex justify-between items-center">
+  <div class="flex justify-between items-center ">
     <h1 class="font-bold text-4xl">Projects</h1>
     <%= link_to "New project", new_project_path, class: "rounded-lg py-3 px-5 bg-blue-600 text-white block font-medium" %>
   </div>
 
-  <div id="projects" class="min-w-full">
-    <% @projects.each do |project| %>
-      <%= render project %>
-      <p>
-        <%= link_to "Show this project", project, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-      </p>
-    <% end %>
-  </div>
+  <div id="projects" class="w-full overflow-x-auto">
+  <table class="min-w-full leading-normal">
+    <thead>
+      <tr>
+        <th scope="col" class="px-5 py-3 border-b-2 border-gray-300 bg-gray-100 text-left text-xs
+         font-semibold text-gray-700 uppercase tracking-wider">
+          Title
+        </th>
+        <th scope="col" class="px-5 py-3 border-b-2 border-gray-300 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+          Application Number
+        </th>
+        <th scope="col" class="px-5 py-3 border-b-2 border-gray-300 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+          Status
+        </th>
+        <th scope="col" class="pl-5 py-3 border-b-2 border-gray-300 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase">
+          Actions
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @projects.each do |project| %>
+        <tr id="<%= dom_id project %>" class="bg-white border-b border-gray-200">
+          <td class="px-5 py-5 text-sm">
+            <%= project.title %>
+          </td>
+          <td class="px-5 py-5 text-sm">
+            <%= project.application_number %>
+          </td>
+          <td class="px-5 py-5 text-sm">
+            <%= project.status %>
+          </td>
+          <td class="pl-5 py-5 text-sm text-left ">
+            <%= link_to "Show this project", project, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
 </div>
