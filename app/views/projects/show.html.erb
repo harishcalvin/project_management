@@ -6,10 +6,20 @@
 
     <%= render @project %>
 
+    
     <%= link_to "Edit this project", edit_project_path(@project), class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
     <%= link_to "Back to projects", projects_path, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+        <%= link_to "Add new phase", new_phase_path, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
     <div class="inline-block ml-2">
       <%= button_to "Destroy this project", @project, method: :delete, class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 font-medium" %>
     </div>
+    <div id="phases" class="min-w-full">
+    <% @phases.each do |phase| %>
+      <%= render phase %>
+      <p>
+        <%= link_to "Show this phase", phase, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+      </p>
+    <% end %>
+  </div>
   </div>
 </div>

@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_08_15_100218) do
+ActiveRecord::Schema[7.2].define(version: 2024_08_15_155007) do
+  create_table "phases", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.string "status"
+    t.date "start_date"
+    t.date "end_end"
+    t.integer "project_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_phases_on_project_id"
+  end
+
   create_table "projects", force: :cascade do |t|
     t.string "title"
     t.text "description"
@@ -19,4 +31,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_15_100218) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  add_foreign_key "phases", "projects"
 end
