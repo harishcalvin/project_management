@@ -1,7 +1,7 @@
 # app/controllers/phases_controller.rb
 class PhasesController < ApplicationController
   before_action :set_phase, only: %i[ show edit update destroy ]
-  before_action :set_project, only: %i[ new create ]
+  before_action :set_project, only: %i[ new create update destroy ]
 
   # GET /phases or /phases.json
   def index
@@ -40,7 +40,7 @@ class PhasesController < ApplicationController
   def update
     respond_to do |format|
       if @phase.update(phase_params)
-        format.html { redirect_to phase_url(@phase), notice: "Phase was successfully updated." }
+        format.html { redirect_to project_phase_path(@project, @phase), notice: "Phase was successfully updated." }
         format.json { render :show, status: :ok, location: @phase }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -54,7 +54,7 @@ class PhasesController < ApplicationController
     @phase.destroy!
 
     respond_to do |format|
-      format.html { redirect_to phases_url, notice: "Phase was successfully destroyed." }
+      format.html { redirect_to project_path(@project), notice: "Phase was successfully destroyed." }
       format.json { head :no_content }
     end
   end
