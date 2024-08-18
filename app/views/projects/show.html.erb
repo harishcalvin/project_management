@@ -1,3 +1,4 @@
+<!-- app/views/projects/show.html.erb -->
 <div class="mx-auto md:w-2/3 w-full flex">
   <div class="mx-auto">
     <% if notice.present? %>
@@ -6,20 +7,19 @@
 
     <%= render @project %>
 
-    
     <%= link_to "Edit this project", edit_project_path(@project), class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
     <%= link_to "Back to projects", projects_path, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-        <%= link_to "Add new phase", new_phase_path, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to "Add new phase", new_project_phase_path(@project), class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
     <div class="inline-block ml-2">
       <%= button_to "Destroy this project", @project, method: :delete, class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 font-medium" %>
     </div>
     <div id="phases" class="min-w-full">
-    <% @phases.each do |phase| %>
-      <%= render phase %>
-      <p>
-        <%= link_to "Show this phase", phase, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-      </p>
-    <% end %>
-  </div>
+      <% @phases.each do |phase| %>
+        <%= render phase %>
+        <p>
+          <%= link_to "Show this phase", project_phase_path(@project, phase), class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+        </p>
+      <% end %>
+    </div>
   </div>
 </div>

@@ -1,10 +1,9 @@
+# /home/harish/repos/ruby_rails/gn_project/config/routes.rb
 Rails.application.routes.draw do
-  resources :phases
-  resources :projects
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  resources :projects do
+    resources :phases, only: [:new, :create, :show, :edit, :update, :destroy]
+  end
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Render dynamic PWA files from app/views/pwa/*

@@ -1,0 +1,43 @@
+<div class="w-full">
+    <% if notice.present? %>
+      <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
+    <% end %>
+  
+    <% content_for :title, "Projects" %>
+  
+    <div class="flex justify-between items-center ">
+      <h1 class="font-bold text-4xl">Projects</h1>
+      <%= link_to "New project", new_project_path, class: "rounded-lg py-3 px-5 bg-blue-600 text-white block font-medium" %>
+    </div>
+  
+    <div id="projects" class="w-full">
+      <% @projects.each do |project| %>
+        <div id="<%= dom_id project %>" class="flex items-center justify-between p-4 mb-3 bg-white rounded-lg shadow-sm border border-gray-200">
+    <p class="my-5 project-info-item flex-wrap ">
+      <strong class="block font-medium mb-1">Title:</strong>
+      <%= project.title %>
+    </p>
+  
+    <p class="my-5 project-info-item flex-wrap ">
+      <strong class="block font-medium mb-1">Description:</strong>
+      <%= project.description %>
+    </p>
+  
+    <p class="my-5 project-info-item flex-wrap ">
+      <strong class="block font-medium mb-1">Application number:</strong>
+      <%= project.application_number %>
+    </p>
+  
+    <p class="my-5 project-info-item flex-wrap ">
+      <strong class="block font-medium mb-1">Status:</strong>
+      <%= project.status %>
+    </p>
+  
+    <p>
+    <%= link_to "Show this project", project, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+  </p>
+  </div>
+      <% end %>
+    </div>
+  </div>
+  
