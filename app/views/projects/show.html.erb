@@ -13,6 +13,14 @@
     <div class="inline-block ml-2">
       <%= button_to "Destroy this project", @project, method: :delete, class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 font-medium" %>
     </div>
+
+    <!-- Filter Form -->
+    <div class="my-4">
+      <%= form_with url: project_path(@project), method: :get, local: true do %>
+        <%= select_tag :phase_status, options_for_select(Phase.statuses.keys.map { |status| [status.humanize, status] }, params[:phase_status]), prompt: "Select Phase Status", class: "rounded-lg py-2 px-4 bg-gray-100", onchange: "this.form.submit();" %>
+      <% end %>
+    </div>
+
     <div id="phases" class="min-w-full">
       <% @phases.each do |phase| %>
         <%= render phase %>

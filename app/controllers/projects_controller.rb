@@ -3,12 +3,24 @@ class ProjectsController < ApplicationController
 
   # GET /projects or /projects.json
   def index
-    @projects = Project.all
+    if params[:status].present?
+      @projects = Project.where(status: params[:status])
+    else
+      @projects = Project.all
+    end
+    @projects = @projects.includes(:phases) # This will eager load phases if needed
+  puts "Debug: Project statuses: #{@projects.pluck(:status)}"
+
   end
 
   # GET /projects/1 or /projects/1.json
   def show
-    @phases = @project.phases
+    @project = Project.find(params[:id])
+    if params[:phase_status].present?
+      @phases = @project.phases.where(status: params[:phase_status])
+    else
+      @phases = @project.phases
+    end
   end
 
   # GET /projects/new
@@ -29,7 +41,7 @@ class ProjectsController < ApplicationController
     else
       render :new, status: :unprocessable_entity
     end
-  end
+  end  # This 'end' should be aligned with the 'def create'
 
   # PATCH/PUT /projects/1 or /projects/1.json
   def update
@@ -55,6 +67,7 @@ class ProjectsController < ApplicationController
   end
 
   private
+
     # Use callbacks to share common setup or constraints between actions.
     def set_project
       @project = Project.find(params[:id])
