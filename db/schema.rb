@@ -14,7 +14,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_15_155007) do
   create_table "phases", force: :cascade do |t|
     t.string "title"
     t.text "description"
-    t.string "status"
+    t.integer "status"
     t.date "start_date"
     t.date "end_end"
     t.integer "project_id", null: false
@@ -27,7 +27,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_15_155007) do
     t.string "title"
     t.text "description"
     t.string "application_number"
-    t.string "status"
+    t.integer "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

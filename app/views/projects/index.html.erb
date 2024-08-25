@@ -1,4 +1,38 @@
 <!-- app/views/projects/index.html.erb -->
+<style>
+  .accordion-content {
+    display: none;
+    transition: all 0.3s ease-out;
+  }
+
+  .accordion-content.active {
+    display: table-row;
+  }
+
+  .accordion-toggle svg {
+    transition: transform 0.3s ease;
+  }
+
+  .accordion-toggle.active svg {
+    transform: rotate(180deg);
+  }
+
+  .project-row {
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .accordion-content {
+    border-bottom: none;
+  }
+
+  .project-row.open {
+    border-bottom: none;
+  }
+
+  .accordion-content.active {
+    border-bottom: 1px solid #e5e7eb;
+  }
+</style>
 <div class="w-full">
   <% if notice.present? %>
   <p
@@ -7,96 +41,134 @@
   >
     <%= notice %>
   </p>
-  <% end %> <% content_for :title, "Projects" %>
+  <% end %>
+  <% content_for :title, "Projects" %>
 
   <div class="flex justify-between items-center">
     <h1 class="font-bold text-4xl">Projects</h1>
-    <%= link_to "New project", new_project_path, class: "rounded-lg py-3 px-5
-    bg-blue-600 text-white block font-medium" %>
+    <%= link_to "New project", new_project_path, class: "rounded-lg py-3 px-5 bg-blue-600 text-white block font-medium" %>
   </div>
 
   <!-- Filter Form -->
   <div class="my-4">
-    <%= form_with url: projects_path, method: :get, local: true do %> <%=
-    select_tag :status, options_for_select(Project.statuses.keys.map { |status|
-    [status.humanize, status] }, params[:status]), prompt: "Select Status",
-    class: "rounded-lg py-2 px-4 bg-gray-100", onchange: "this.form.submit();"
-    %> <% end %>
+    <%= form_with url: projects_path, method: :get, local: true do %>
+      <%= select_tag :status, options_for_select(Project.statuses.keys.map { |status| [status.humanize, status] }, params[:status]), prompt: "Select Status", class: "rounded-lg py-2 px-4 bg-gray-100", onchange: "this.form.submit();" %>
+    <% end %>
   </div>
 
   <div id="projects" class="w-full overflow-x-auto">
     <table class="min-w-full leading-normal">
       <thead>
         <tr>
-          <th
-            scope="col"
-            class="px-5 py-3 border-b-2 border-gray-300 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
-          >
+          <th scope="col" class="px-5 py-3 border-b-2 border-gray-300 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
             Title
           </th>
-          <th
-            scope="col"
-            class="px-5 py-3 border-b-2 border-gray-300 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
-          >
+          <th scope="col" class="px-5 py-3 border-b-2 border-gray-300 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
             Application Number
           </th>
-          <th
-            scope="col"
-            class="px-5 py-3 border-b-2 border-gray-300 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
-          >
+          <th scope="col" class="px-5 py-3 border-b-2 border-gray-300 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
             Status
           </th>
-          <th
-            scope="col"
-            class="pl-5 py-3 border-b-2 border-gray-300 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase"
-          >
+          <th scope="col" class="px-5 py-3 border-b-2 border-gray-300 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
             Actions
           </th>
         </tr>
       </thead>
       <tbody>
         <% @projects.each do |project| %>
-        <tr
-          id="<%= dom_id project %>"
-          class="bg-white border-b border-gray-200"
-        >
-          <td class="px-5 py-5 text-sm"><%= project.title %></td>
-          <td class="px-5 py-5 text-sm"><%= project.application_number %></td>
-         <td class="px-5 py-5 text-sm">
-  <% if project.status.present? %>
-    <% case project.status %>
-    <% when 'pending' %>
-      <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-        <%= project.status.capitalize %>
-      </span>
-    <% when 'in_progress' %>
-      <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-        <%= project.status.titleize %>
-      </span>
-    <% when 'completed' %>
-      <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-        <%= project.status.capitalize %>
-      </span>
-    <% else %>
-      <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-        <%= project.status.capitalize %>
-      </span>
-    <% end %>
-  <% else %>
-    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-      No Status
-    </span>
-  <% end %>
-</td>
-
-
-          <td class="pl-5 py-5 text-sm text-left">
-            <%= link_to "Show this project", project, class: "rounded-lg py-3
-            px-5 bg-gray-100 inline-block font-medium" %>
-          </td>
-        </tr>
+          <tr id="<%= dom_id project %>" class="project-row bg-white">
+            <td class="px-5 py-5 text-sm">
+              <div class="flex items-center justify-between">
+                <div>
+                  <%= project.title %>
+                  <div class="text-xs text-gray-500 mt-1 flex items-center">
+                    <%= pluralize(project.phases.count, 'phase') %>
+                    <button class="ml-2 text-gray-500 hover:text-gray-700 accordion-toggle">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="px-5 py-5 text-sm"><%= project.application_number %></td>
+            <td class="px-5 py-5 text-sm">
+              <!-- ... (keep the status content as it is) ... -->
+               <% if project.status.present? %> 
+            <% case project.status %> 
+            <% when 'pending' %>
+            <span
+              class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800"
+            >
+              <%= project.status.capitalize %>
+            </span>
+            <% when 'in_progress' %>
+            <span
+              class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800"
+            >
+              <%= project.status.titleize %>
+            </span>
+            <% when 'completed' %>
+            <span
+              class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+            >
+              <%= project.status.capitalize %>
+            </span>
+            <% else %>
+            <span
+              class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800"
+            >
+              <%= project.status.capitalize %>
+            </span>
+            <% end %> <% else %>
+            <span
+              class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800"
+            >
+              No Status
+            </span>
+            <% end %>
+            </td>
+            <td class="px-5 py-5 text-sm text-left">
+              <%= link_to "Show this project", project, class: "rounded-lg py-2 px-3 bg-gray-100 inline-block font-medium" %>
+            </td>
+          </tr>
+          <tr class="accordion-content bg-gray-50">
+            <td colspan="4" class="px-5 py-3">
+              <div class="text-sm">
+                <h4 class="font-semibold mb-2">Phases:</h4>
+                <% project.phases.each do |phase| %>
+                  <div class="mb-1">
+                    <%= phase.title %>
+                    <span class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full <%= phase_status_class(phase.status) %>">
+                      <%= phase.status.capitalize %>
+                    </span>
+                  </div>
+                <% end %>
+              </div>
+            </td>
+          </tr>
         <% end %>
       </tbody>
     </table>
   </div>
 </div>
+
+<!-- Add the following JavaScript to toggle the dropdown -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const accordionToggles = document.querySelectorAll(".accordion-toggle");
+
+  accordionToggles.forEach(function(toggle) {
+    toggle.addEventListener("click", function(event) {
+      event.preventDefault();
+      const projectRow = this.closest('tr');
+      const contentRow = projectRow.nextElementSibling;
+      
+      contentRow.classList.toggle("active");
+      this.classList.toggle("active");
+      projectRow.classList.toggle("open");
+    });
+  });
+});
+</script>

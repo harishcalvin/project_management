@@ -15,11 +15,13 @@
     </div>
 
     <!-- Filter Form -->
-    <div class="my-4">
-      <%= form_with url: project_path(@project), method: :get, local: true do %>
-        <%= select_tag :phase_status, options_for_select(Phase.statuses.keys.map { |status| [status.humanize, status] }, params[:phase_status]), prompt: "Select Phase Status", class: "rounded-lg py-2 px-4 bg-gray-100", onchange: "this.form.submit();" %>
-      <% end %>
-    </div>
+    <% if @project.phases.any? %>
+      <div class="my-4">
+        <%= form_with url: project_path(@project), method: :get, local: true do %>
+          <%= select_tag :phase_status, options_for_select(Phase.statuses.keys.map { |status| [status.humanize, status] }, params[:phase_status]), prompt: "Select Phase Status", class: "rounded-lg py-2 px-4 bg-gray-100", onchange: "this.form.submit();" %>
+        <% end %>
+      </div>
+    <% end %>
 
     <div id="phases" class="min-w-full">
       <% @phases.each do |phase| %>

@@ -4,7 +4,7 @@ class CreateProjects < ActiveRecord::Migration[7.2]
       t.string :title
       t.text :description
       t.string :application_number
-      t.string :status
+      t.integer :status
 
       t.timestamps
     end

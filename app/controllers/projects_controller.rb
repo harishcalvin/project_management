@@ -9,8 +9,6 @@ class ProjectsController < ApplicationController
       @projects = Project.all
     end
     @projects = @projects.includes(:phases) # This will eager load phases if needed
-  puts "Debug: Project statuses: #{@projects.pluck(:status)}"
-
   end
 
   # GET /projects/1 or /projects/1.json
