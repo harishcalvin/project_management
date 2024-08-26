@@ -20,7 +20,6 @@ class PhasesController < ApplicationController
   # GET /phases/1/edit
   def edit
   end
-  
   # POST /projects/:project_id/phases or /projects/:project_id/phases.json
   def create
     @phase = @project.phases.new(phase_params)
@@ -71,6 +70,6 @@ class PhasesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def phase_params
-      params.require(:phase).permit(:title, :description, :status, :start_date, :end_date)
+      params.require(:phase).permit(:title, :description, :status, :start_date, :end_end)
     end
 end
