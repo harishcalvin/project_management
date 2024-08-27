@@ -1,7 +1,7 @@
 # app/controllers/phases_controller.rb
 class PhasesController < ApplicationController
-  before_action :set_phase, only: %i[ show edit update destroy ]
-  before_action :set_project, only: %i[ new create update destroy ]
+  before_action :set_phase, only: %i[show edit update destroy]
+  before_action :set_project, only: %i[new create update destroy]
 
   # GET /phases or /phases.json
   def index
@@ -20,6 +20,7 @@ class PhasesController < ApplicationController
   # GET /phases/1/edit
   def edit
   end
+
   # POST /projects/:project_id/phases or /projects/:project_id/phases.json
   def create
     @phase = @project.phases.new(phase_params)
@@ -59,17 +60,18 @@ class PhasesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_phase
-      @phase = Phase.find(params[:id])
-    end
 
-    def set_project
-      @project = Project.find(params[:project_id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_phase
+    @phase = Phase.find(params[:id])
+  end
 
-    # Only allow a list of trusted parameters through.
-    def phase_params
-      params.require(:phase).permit(:title, :description, :status, :start_date, :end_end)
-    end
+  def set_project
+    @project = Project.find(params[:project_id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def phase_params
+    params.require(:phase).permit(:title, :description, :status, :start_date, :end_end)
+  end
 end

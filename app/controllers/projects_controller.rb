@@ -1,27 +1,28 @@
 class ProjectsController < ApplicationController
-  before_action :set_project, only: %i[ show edit update destroy ]
+  before_action :set_project, only: %i[show edit update destroy]
 
   # GET /projects or /projects.json
   def index
     @projects = Project.all
     @projects = @projects.where(status: params[:status]) if params[:status].present?
-    
+
     # Count for active projects (pending and in_progress)
-    @active_projects_count = Project.where(status: ['pending', 'in_progress']).count
-    
+    @active_projects_count = Project.where(status: ["pending", "in_progress"]).count
+
     # Eager load phases
     @projects = @projects.includes(:phases)
 
     # Get total count
     @total_projects_count = Project.count
   end
+
   # GET /projects/1 or /projects/1.json
   def show
     @project = Project.find(params[:id])
-    if params[:phase_status].present?
-      @phases = @project.phases.where(status: params[:phase_status])
+    @phases = if params[:phase_status].present?
+      @project.phases.where(status: params[:phase_status])
     else
-      @phases = @project.phases
+      @project.phases
     end
   end
 
@@ -70,13 +71,13 @@ class ProjectsController < ApplicationController
 
   private
 
-    # Use callbacks to share common setup or constraints between actions.
-    def set_project
-      @project = Project.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_project
+    @project = Project.find(params[:id])
+  end
 
-    # Only allow a list of trusted parameters through.
-    def project_params
-      params.require(:project).permit(:title, :description, :application_number, :status)
-    end
+  # Only allow a list of trusted parameters through.
+  def project_params
+    params.require(:project).permit(:title, :description, :application_number, :status)
+  end
 end
