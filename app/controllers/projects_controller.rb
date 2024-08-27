@@ -3,14 +3,18 @@ class ProjectsController < ApplicationController
 
   # GET /projects or /projects.json
   def index
-    if params[:status].present?
-      @projects = Project.where(status: params[:status])
-    else
-      @projects = Project.all
-    end
-    @projects = @projects.includes(:phases) # This will eager load phases if needed
-  end
+    @projects = Project.all
+    @projects = @projects.where(status: params[:status]) if params[:status].present?
+    
+    # Count for active projects (pending and in_progress)
+    @active_projects_count = Project.where(status: ['pending', 'in_progress']).count
+    
+    # Eager load phases
+    @projects = @projects.includes(:phases)
 
+    # Get total count
+    @total_projects_count = Project.count
+  end
   # GET /projects/1 or /projects/1.json
   def show
     @project = Project.find(params[:id])
