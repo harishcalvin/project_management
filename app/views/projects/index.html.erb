@@ -173,6 +173,7 @@
                       <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
                       <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
                       <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                      <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody class="bg-white divide-y divide-gray-200">
@@ -187,6 +188,10 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= phase.start_date&.strftime('%B %d, %Y') %></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= phase.end_end&.strftime('%B %d, %Y') %></td>
                         <td class="px-6 py-4 text-sm text-gray-500"><%= truncate(phase.description, length: 100) %></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <%= link_to "View", project_phase_path(project, phase), class: "text-indigo-600 hover:text-indigo-900 mr-2" %>
+                          <%= link_to "Edit", edit_project_phase_path(project, phase), class: "text-green-600 hover:text-green-900", data: { remote: true } %>
+                        </td>
                       </tr>
                     <% end %>
                   </tbody>
