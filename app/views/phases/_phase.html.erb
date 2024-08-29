@@ -8,6 +8,10 @@
     <%= phase.description %>
   </p>
   <p class="my-5">
+    <strong class="block font-medium mb-1">Client Description:</strong>
+    <%= phase.client_description || "No client description provided." %>
+  </p>
+  <p class="my-5">
     <strong class="block font-medium mb-1">Status:</strong>
     <%= phase.status %>
   </p>
