@@ -1,4 +1,36 @@
 <!-- app/views/phases/_form.html.erb -->
+<style>
+  .subtasks-heading {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  margin-right: 12px;
+  }
+
+  .add-subtask-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  }
+
+  .add-subtask-btn:hover {
+  background-color: #f0f0f0;
+  }
+
+  .add-subtask-btn::before {
+  content: "\2295"; /* Unicode for circled plus sign */
+  margin-right: 6px;
+  font-size: 16px;
+  }
+</style>
 <%= form_with(model: [phase.project, phase], local: true, class: "contents") do
 |form| %> <% if phase.errors.any? %>
   <div
@@ -25,9 +57,35 @@
   class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2
   mt-2 w-full" %>
 </div>
+<div class="my-5 ">
+  <div class="flex justify-center items-center">
+    <h3 class="subtasks-heading">Sub-Tasks / Milestones</h3>
+    <button type="button" id="add-internal-milestone" class="add-subtask-btn">
+      Add Sub-Task
+    </button>
+  </div>
+  <div id="internal-milestones">
+    <%= form.fields_for :milestones, phase.milestones.where(internal: true) do |milestone_form| %>
+      <%= render 'milestone_fields', f: milestone_form, internal: true %>
+    <% end %>
+  </div>
+</div>
 <div class="my-5">
   <%= form.label :client_description %>
   <%= form.text_area :client_description, rows: 4, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
+</div>
+<div class="my-5">
+  <div class="flex justify-center items-center">
+    <h3 class="subtasks-heading">Client Sub-Tasks / Milestones</h3>
+    <button type="button" id="add-client-milestone" class="add-subtask-btn">
+      Add Sub-Task
+    </button>
+  </div>
+  <div id="client-milestones">
+    <%= form.fields_for :milestones, phase.milestones.where(client_facing: true) do |milestone_form| %>
+      <%= render 'milestone_fields', f: milestone_form, internal: false %>
+    <% end %>
+  </div>
 </div>
 <div class="my-5">
   <%= form.label :status %> <%= form.select :status,
@@ -49,4 +107,55 @@
   <%= form.submit class: "rounded-lg py-3 px-5 bg-blue-600 text-white
   inline-block font-medium cursor-pointer" %>
 </div>
+<%= content_tag :div, id: "milestone-template", style: "display: none;" do %>
+  <%= form.fields_for :milestones, Milestone.new, child_index: 'NEW_RECORD' do |milestone_form| %>
+    <%= render 'milestone_fields', f: milestone_form, internal: true %>
+  <% end %>
 <% end %>
+<% end %>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const milestoneTemplate = document.getElementById('milestone-template').innerHTML;
+
+    function addMilestone(containerId, internal) {
+      const container = document.getElementById(containerId);
+      const template = document.createElement('template');
+      const newIndex = new Date().getTime();
+      template.innerHTML = milestoneTemplate.replace(/NEW_RECORD/g, newIndex);
+
+      const newMilestone = template.content.firstElementChild;
+      if (!internal) {
+    newMilestone.querySelector('input[name*="[internal]"]').value = 'false';
+        newMilestone.querySelector('input[name*="[client_facing]"]').value = 'true';
+        newMilestone.querySelector('.milestone-type').classList.remove('internal');
+        newMilestone.querySelector('.milestone-type').classList.add('client-facing');
+        newMilestone.querySelector('.milestone-type').textContent = 'Client-facing';
+
+      }
+
+      container.appendChild(newMilestone);
+    }
+
+    document.getElementById('add-internal-milestone').addEventListener('click', function() {
+      addMilestone('internal-milestones', true);
+    });
+
+    document.getElementById('add-client-milestone').addEventListener('click', function() {
+      addMilestone('client-milestones', false);
+    });
+
+    // Update this part to handle the new close icon
+    document.addEventListener('click', function(event) {
+      if (event.target.classList.contains('close-icon')) {
+        const milestoneCard = event.target.closest('.milestone-card');
+        const destroyField = milestoneCard.querySelector('input[name*="_destroy"]');
+        if (destroyField) {
+          destroyField.value = '1';
+          milestoneCard.style.display = 'none';
+        } else {
+          milestoneCard.remove();
+        }
+      }
+    });
+  });
+</script>

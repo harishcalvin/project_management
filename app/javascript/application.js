@@ -1,5 +1,8 @@
 // import '@hotwired/turbo-rails';
-// import './controllers';
-// import './custom/dropdown';
+// import 'controllers';
 
-// console.log('Application.js loaded');
+console.log('Loading application.js');
+
+// You can uncomment these if you need them later
+// import './custom/dropdown';
+// import '@nathanvda/cocoon';

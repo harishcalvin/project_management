@@ -7,10 +7,26 @@
     <strong class="block font-medium mb-1">Description:</strong>
     <%= phase.description %>
   </p>
+  <h3>Internal Milestones</h3>
+  <% @phase.milestones.where(internal: true).each do |milestone| %>
+    <div>
+      <h4><%= milestone.title %></h4>
+      <p><%= milestone.description %></p>
+      <p>Status: <%= milestone.completed ? 'Completed' : 'Pending' %></p>
+    </div>
+  <% end %>
   <p class="my-5">
     <strong class="block font-medium mb-1">Client Description:</strong>
     <%= phase.client_description || "No client description provided." %>
   </p>
+  <h3>Client Milestones</h3>
+  <% @phase.milestones.where(client_facing: true).each do |milestone| %>
+    <div>
+      <h4><%= milestone.title %></h4>
+      <p><%= milestone.description %></p>
+      <p>Status: <%= milestone.completed ? 'Completed' : 'Pending' %></p>
+    </div>
+  <% end %>
   <p class="my-5">
     <strong class="block font-medium mb-1">Status:</strong>
     <%= phase.status %>

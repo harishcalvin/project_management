@@ -4,6 +4,8 @@ source "https://rubygems.org"
 gem "rails", "~> 7.2.0"
 gem "htmlbeautifier"
 gem "standard"
+gem "cocoon"
+
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 # Use sqlite3 as the database for Active Record
@@ -58,4 +60,5 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+  gem "cocoon"
 end
