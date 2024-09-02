@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_08_15_155007) do
+ActiveRecord::Schema[7.2].define(version: 2024_09_02_115951) do
+  create_table "milestones", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.boolean "internal"
+    t.boolean "client_facing"
+    t.boolean "completed"
+    t.integer "phase_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["phase_id"], name: "index_milestones_on_phase_id"
+  end
+
   create_table "phases", force: :cascade do |t|
     t.string "title"
     t.text "description"
@@ -20,6 +32,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_15_155007) do
     t.integer "project_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "client_description"
     t.index ["project_id"], name: "index_phases_on_project_id"
   end
 
@@ -30,7 +43,10 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_15_155007) do
     t.integer "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.date "project_start_date"
+    t.date "project_est_end_date"
   end
 
+  add_foreign_key "milestones", "phases"
   add_foreign_key "phases", "projects"
 end
