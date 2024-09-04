@@ -1,51 +1,156 @@
-<!-- app/views/projects/_form.html.erb -->
-<%= form_with(model: project, class: "contents") do |form| %> <% if
-project.errors.any? %>
-  <div
-  id="error_explanation"
-  class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3"
->
-    <h2>
-      <%= pluralize(project.errors.count, "error") %> prohibited this project from
-      being saved:
-    </h2>
-    <ul>
-      <% project.errors.each do |error| %>
-        <li><%= error.full_message %></li>
-      <% end %>
-    </ul>
+<%= form_with(model: project, class: "contents") do |form| %>
+  <% if project.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
+      <h2><%= pluralize(project.errors.count, "error") %> prohibited this project from being saved:</h2>
+      <ul>
+        <% project.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="form-section">
+    <div class="my-5 form-group">
+      <%= form.label :title, class: "form-label" %>
+      <%= form.text_field :title, placeholder: "Project title", class: "form-input" %>
+    </div>
+    <div class="my-5 form-group">
+      <%= form.label :description, class: "form-label" %>
+      <%= form.text_area :description, rows: 4, class: "form-textarea" %>
+    </div>
+    <div class="my-5 form-group">
+      <%= form.label :application_number, class: "form-label" %>
+      <%= form.text_field :application_number, class: "form-input" %>
+    </div>
+    <div class="my-5 form-group">
+      <%= form.label :status, class: "form-label" %>
+      <%= form.select :status, options_for_select(Project.statuses.keys.map { |status| [status.humanize, status] }, project.status), {}, class: "form-select" %>
+    </div>
+    <div class="form-group">
+      <%= form.label :project_timeline, class: "form-label" %>
+      <div class="date-range">
+        <div class="date-field">
+          <label class="date-label">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="calendar-icon start-icon">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+            </svg>
+            Start Date
+          </label>
+          <%= form.date_field :project_start_date, class: "form-input date-input" %>
+        </div>
+        <div class="date-field">
+          <label class="date-label">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="calendar-icon end-icon">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+            </svg>
+            Estimated End Date
+          </label>
+          <%= form.date_field :project_est_end_date, class: "form-input date-input" %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form-actions">
+    <%= form.submit class: "btn-submit" %>
+    <%= link_to "Back to projects", projects_path, class: "btn-submit" %>
   </div>
 <% end %>
-<div class="my-5">
-  <%= form.label :title %> <%= form.text_field :title, class: "block shadow
-  rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
-</div>
-<div class="my-5">
-  <%= form.label :description %> <%= form.text_area :description, rows: 4,
-  class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2
-  mt-2 w-full" %>
-</div>
-<div class="my-5">
-  <%= form.label :application_number %> <%= form.text_field :application_number,
-  class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2
-  mt-2 w-full" %>
-</div>
-<div class="my-5">
-  <%= form.label :status %> <%= form.select :status,
-  options_for_select(Project.statuses.keys.map { |status| [status.humanize,
-  status] }, project.status), class: "block shadow rounded-md border
-  border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
-</div>
-<div class="field">
-  <%= form.label :project_start_date %>
-  <%= form.date_field :project_start_date %>
-</div>
-<div class="field">
-  <%= form.label :project_est_end_date %>
-  <%= form.date_field :project_est_end_date %>
-</div>
-<div class="inline">
-  <%= form.submit class: "rounded-lg py-3 px-5 bg-blue-600 text-white
-  inline-block font-medium cursor-pointer" %>
-</div>
-<% end %>
+<style>
+  .form-section {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .form-group {
+    margin-bottom: 20px;
+  }
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .form-textarea {
+    resize: vertical;
+  }
+  .date-range {
+    display: flex;
+    align-items: center;
+  }
+  .date-field {
+    flex: 1;
+  }
+  .date-separator {
+    margin: 0 10px;
+  }
+  .btn-submit {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin: 10px;
+  }
+  .btn-submit:hover {
+    background-color: #0e0e0e;
+    color: #fff;
+  }
+  .form-actions {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 20px;
+  }
+  .date-range {
+  display: flex;
+  gap: 20px;
+  }
+
+  .date-field {
+  flex: 1;
+  }
+
+  .date-label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+  }
+
+  .calendar-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  }
+
+  .start-icon {
+  color: #3490dc; /* Blue color for start date */
+  }
+
+  .end-icon {
+  color: #38a169; /* Green color for end date */
+  }
+
+  .date-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  }
+</style>

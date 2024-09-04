@@ -86,7 +86,7 @@
   </div>
   <div class="form-actions">
     <%= form.submit "Save Phase", class: "btn-submit" %>
-    <%= link_to "Back to project", project_path(@phase.project), class: "btn-submit" %>
+    <%= link_to "Back to phases", project_path(@phase.project, tab: 'phases'), class: "btn-submit" %>
   </div>
   <%= content_tag :div, id: "milestone-template", style: "display: none;" do %>
     <%= form.fields_for :milestones, Milestone.new, child_index: 'NEW_RECORD' do |milestone_form| %>

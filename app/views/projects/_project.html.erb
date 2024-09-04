@@ -1,26 +1,94 @@
-<div id="<%= dom_id project %>">
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Title:</strong>
-    <%= project.title %>
+<style>
+  .project-card {
+    margin-bottom: 30px; /* Add space between multiple project cards if displayed in a list */
+  }
+  .project-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 20px 0 15px; /* Top and bottom margin */
+    color: #333;
+  }
+  .project-status {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  .status-label {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    background-color: #e0f2fe;
+    color: #0369a1;
+    font-weight: bold;
+    margin-bottom: 15px; /* Bottom margin */
+  }
+  .project-detail {
+    margin: 15px 0; /* Top and bottom margin */
+    color: #333;
+  }
+  .project-detail strong {
+    font-weight: bold;
+    color: #666;
+  }
+  .edit-button {
+    float: right;
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    text-decoration: none;
+    margin-bottom: 15px; /* Bottom margin */
+  }
+  .edit-button:hover {
+    background-color: #e0e0e0;
+  }
+  .icon-duraction svg {
+    width: 16px;
+    height: 16px;
+    margin-right: 14px;
+  }
+  .project-duration {
+    margin-top: 10px; /* Top margin */
+  }
+  @media (max-width: 480px) {
+    .project-card {
+      padding: 15px;
+    }
+    .project-title {
+      font-size: 20px;
+    }
+  }
+</style>
+<div id="<%= dom_id project %>" class="project-card">
+  <a href="<%= edit_project_path(project) %>" class="edit-button">
+    <span class="edit-icon">✎</span>
+    <span class="edit-text">Edit</span>
+  </a>
+  <h2 class="project-title"><%= project.title %></h2>
+  <div class="project-status">
+    <span class="status-label"><%= project.status.capitalize %></span>
+  </div>
+  <p class="project-detail">
+    <strong>App #<%= project.application_number %></strong>
   </p>
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Description:</strong>
+  <p class="project-detail">
+    <strong>Description:</strong><br>
     <%= project.description %>
   </p>
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Application number:</strong>
-    <%= project.application_number %>
-  </p>
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Status:</strong>
-    <%= project.status %>
-  </p>
-  <p>
-    <strong>Project Start Date:</strong>
-    <%= @project.project_start_date %>
-  </p>
-  <p>
-    <strong>Estimated End Date:</strong>
-    <%= @project.project_est_end_date %>
+  <p class="project-detail">
+    <strong>Project Duration:</strong>
+    <div class="project-duration flex items-center">
+      <span class="icon-duraction">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+        </svg>
+      </span>
+      <span>
+        <%= project.project_start_date&.strftime('%Y-%m-%d') %> - <%= project.project_est_end_date&.strftime('%Y-%m-%d') %>
+      </span>
+    </div>
   </p>
 </div>

@@ -19,10 +19,21 @@ class ProjectsController < ApplicationController
   # GET /projects/1 or /projects/1.json
   def show
     @project = Project.find(params[:id])
-    @phases = if params[:phase_status].present?
-      @project.phases.where(status: params[:phase_status])
-    else
-      @project.phases
+    @phases = @project.phases.includes(:milestones)
+    @total_phases = @phases.count
+
+    if params[:phase_status].present?
+      @phases = @phases.where(status: params[:phase_status])
+    end
+    if params[:search].present?
+      @phases = @phases.where("title ILIKE ?", "%#{params[:search]}%")
+    end
+
+    @filtered_phases = @phases.count
+
+    respond_to do |format|
+      format.html
+      format.js { render partial: "phases/list", locals: {phases: @phases, total_phases: @total_phases, filtered_phases: @filtered_phases} }
     end
   end
 
@@ -50,10 +61,10 @@ class ProjectsController < ApplicationController
   def update
     respond_to do |format|
       if @project.update(project_params)
-        format.html { redirect_to project_url(@project), notice: "Project was successfully updated." }
+        format.html { redirect_to @project, notice: "Project was successfully updated." }
         format.json { render :show, status: :ok, location: @project }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { render :edit }
         format.json { render json: @project.errors, status: :unprocessable_entity }
       end
     end
@@ -78,6 +89,6 @@ class ProjectsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def project_params
-    params.require(:project).permit(:title, :description, :application_number, :project_start_date, :project_est_end_date, :status)
+    params.require(:project).permit(:title, :description, :application_number, :status, :project_start_date, :project_est_end_date)
   end
 end

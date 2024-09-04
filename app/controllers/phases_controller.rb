@@ -54,7 +54,7 @@ class PhasesController < ApplicationController
     @phase.destroy!
 
     respond_to do |format|
-      format.html { redirect_to project_path(@project), notice: "Phase was successfully destroyed." }
+      format.html { redirect_to project_path(@project, tab: "phases"), notice: "Phase was successfully deleted." }
       format.json { head :no_content }
     end
   end

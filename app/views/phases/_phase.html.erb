@@ -1,46 +1,186 @@
-<div id="<%= dom_id phase %>">
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Title:</strong>
-    <%= phase.title %>
-  </p>
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Description:</strong>
-    <%= phase.description %>
-  </p>
-  <h3>Internal Milestones</h3>
-  <% @phase.milestones.where(internal: true).each do |milestone| %>
-    <div>
-      <h4><%= milestone.title %></h4>
-      <p><%= milestone.description %></p>
-      <p>Status: <%= milestone.completed ? 'Completed' : 'Pending' %></p>
+<div id="<%= dom_id phase %>" class="phase-row">
+  <div class="phase-main">
+    <div class="phase-header">
+      <%= phase_icon(phase) %>
+      <h3 class="phase-title"><%= phase.title %></h3>
+      <% status_class = case phase.status
+        when 'completed' then 'bg-green-100 text-green-800'
+        when 'in_progress' then 'bg-yellow-100 text-yellow-800'
+        when 'not_started' then 'bg-red-100 text-red-800'
+        else 'bg-gray-100 text-gray-800'
+      end %>
+      <span class="phase-status <%= status_class %>">
+        <%= phase.status.titleize %>
+      </span>
     </div>
-  <% end %>
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Client Description:</strong>
-    <%= phase.client_description || "No client description provided." %>
-  </p>
-  <h3>Client Milestones</h3>
-  <% @phase.milestones.where(client_facing: true).each do |milestone| %>
-    <div>
-      <h4><%= milestone.title %></h4>
-      <p><%= milestone.description %></p>
-      <p>Status: <%= milestone.completed ? 'Completed' : 'Pending' %></p>
+    <div class="phase-details">
+      <span class="phase-timeline">
+        <%= phase.start_date ? phase.start_date.strftime("%Y-%m-%d") : "No start date" %> - 
+        <%= phase.end_end ? phase.end_end.strftime("%Y-%m-%d") : "No end date" %>
+      </span>
+      <span class="phase-milestones">
+        <%= pluralize(phase.milestones.count, 'milestone') %>
+        (Internal: <%= phase.milestones.where(internal: true).count %>,
+        Client: <%= phase.milestones.where(client_facing: true).count %>)
+      </span>
     </div>
-  <% end %>
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Status:</strong>
-    <%= phase.status %>
-  </p>
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Start date:</strong>
-    <%= phase.start_date %>
-  </p>
-  <p class="my-5">
-    <strong class="block font-medium mb-1">End date:</strong>
-    <%= phase.end_end %>
-  </p>
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Project:</strong>
-    <%= phase.project_id %>
-  </p>
+  </div>
+  <div class="phase-actions">
+    <% project = @project || phase.project %>
+    <%= link_to edit_project_phase_path(project, phase), class: "action-icon edit" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      </svg>
+    <% end %>
+    <%= button_to project_phase_path(project, phase), 
+              method: :delete, 
+              data: { 
+                confirm: "Are you sure you want to delete this phase?",
+                remote: true,
+                action: 'click->phase#delete'
+              }, 
+              class: "action-icon delete", 
+              form_class: "inline-block" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+      </svg>
+    <% end %>
+    <button class="action-icon expand" onclick="togglePhaseDetails(<%= phase.id %>)">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+  </div>
 </div>
+<div id="phase-details-<%= phase.id %>" class="phase-full-details" style="display: none;">
+  <p class="text-gray-600 mb-4"><%= phase.description %></p>
+  <div class="mb-4">
+    <h3 class="text-lg font-semibold mb-2">Client Description</h3>
+    <p class="text-gray-600"><%= phase.client_description.presence || "No client description provided." %></p>
+  </div>
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <h3 class="text-lg font-semibold mb-2">Internal Milestones</h3>
+      <% if phase.milestones.where(internal: true).any? %>
+        <% phase.milestones.where(internal: true).each do |milestone| %>
+          <div class="mb-2 p-2 bg-gray-50 rounded">
+            <h4 class="font-medium"><%= milestone.title %></h4>
+            <p class="text-sm text-gray-600"><%= milestone.description %></p>
+            <p class="text-sm"><strong>Status:</strong> <%= milestone.completed ? 'Completed' : 'Pending' %></p>
+          </div>
+        <% end %>
+      <% else %>
+        <p>No internal milestones.</p>
+      <% end %>
+    </div>
+    <div>
+      <h3 class="text-lg font-semibold mb-2">Client Milestones</h3>
+      <% if phase.milestones.where(client_facing: true).any? %>
+        <% phase.milestones.where(client_facing: true).each do |milestone| %>
+          <div class="mb-2 p-2 bg-gray-50 rounded">
+            <h4 class="font-medium"><%= milestone.title %></h4>
+            <p class="text-sm text-gray-600"><%= milestone.description %></p>
+            <p class="text-sm"><strong>Status:</strong> <%= milestone.completed ? 'Completed' : 'Pending' %></p>
+          </div>
+        <% end %>
+      <% else %>
+        <p>No client milestones.</p>
+      <% end %>
+    </div>
+  </div>
+</div>
+<style>
+  .phase-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #e5e7eb;
+  }
+
+  .phase-main {
+  flex-grow: 1;
+  }
+
+  .phase-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  }
+
+  .phase-title {
+  margin: 0 10px;
+  font-size: 18px;
+  font-weight: 600;
+  }
+
+  .phase-status {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  }
+
+  .phase-details {
+  display: flex;
+  font-size: 14px;
+  color: #6b7280;
+  }
+
+  .phase-details > * {
+  margin-right: 15px;
+  }
+
+  .phase-actions {
+  display: flex;
+  align-items: center;
+  }
+
+  .action-icon {
+   display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin-left: 10px;
+  color: #6b7280;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+  }
+  .action-icon:hover {
+  background-color: #f3f4f6;
+  }
+
+  .action-icon svg {
+  width: 20px;
+  height: 20px;
+  }
+
+  .edit:hover {
+  color: #3b82f6;
+  }
+
+  .delete:hover {
+  color: #ef4444;
+  }
+
+  .expand:hover {
+  color: #10b981;
+  }
+  .phase-full-details {
+  padding: 15px;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  }
+</style>
+<script>
+  function togglePhaseDetails(phaseId) {
+  var detailsElement = document.getElementById('phase-details-' + phaseId);
+  if (detailsElement.style.display === 'none') {
+    detailsElement.style.display = 'block';
+  } else {
+    detailsElement.style.display = 'none';
+  }
+  }
+</script>

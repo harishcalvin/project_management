@@ -11,4 +11,14 @@ module PhasesHelper
       "bg-gray-100 text-gray-800"
     end
   end
+
+  def phase_icon(phase)
+    icon_class = case phase.status
+    when "in_progress" then "fa-play-circle"
+    when "completed" then "fa-check-circle"
+    else "fa-circle"
+    end
+
+    content_tag(:i, "", class: "fas #{icon_class} phase-icon")
+  end
 end
