@@ -1,0 +1,4 @@
+<%= render partial: "phases/phase", collection: phases %>
+<script>
+  document.querySelector('.phases-total-count').innerHTML = '<%= total_phases %> phases <span class="phases-total-filtered-count">(<%= filtered_phases %> filtered)</span>';
+</script>

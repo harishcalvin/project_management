@@ -17,7 +17,7 @@ class PhasesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create phase" do
     assert_difference("Phase.count") do
-      post phases_url, params: { phase: { description: @phase.description, end_end: @phase.end_end, project_id: @phase.project_id, start_date: @phase.start_date, status: @phase.status, title: @phase.title } }
+      post phases_url, params: {phase: {description: @phase.description, end_end: @phase.end_end, project_id: @phase.project_id, start_date: @phase.start_date, status: @phase.status, title: @phase.title}}
     end
 
     assert_redirected_to phase_url(Phase.last)
@@ -34,7 +34,7 @@ class PhasesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update phase" do
-    patch phase_url(@phase), params: { phase: { description: @phase.description, end_end: @phase.end_end, project_id: @phase.project_id, start_date: @phase.start_date, status: @phase.status, title: @phase.title } }
+    patch phase_url(@phase), params: {phase: {description: @phase.description, end_end: @phase.end_end, project_id: @phase.project_id, start_date: @phase.start_date, status: @phase.status, title: @phase.title}}
     assert_redirected_to phase_url(@phase)
   end
 

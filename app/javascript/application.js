@@ -1,3 +1,8 @@
-// Configure your import map in config/importmap.rb. Read more: https://github.com/rails/importmap-rails
-import "@hotwired/turbo-rails"
-import "controllers"
+// import '@hotwired/turbo-rails';
+// import 'controllers';
+
+console.log('Loading application.js');
+
+// You can uncomment these if you need them later
+// import './custom/dropdown';
+// import '@nathanvda/cocoon';

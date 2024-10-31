@@ -1,0 +1,21 @@
+<div class="milestone-card">
+  <%= f.hidden_field :_destroy %>
+  <%= f.hidden_field :internal %>
+  <%= f.hidden_field :client_facing %>
+  <div class="milestone-header">
+    <span class="milestone-type <%= internal ? 'internal' : 'client-facing' %>">
+      <%= internal ? 'Internal' : 'Client-facing' %>
+    </span>
+    <button type="button" class="close-icon">&times;</button>
+  </div>
+  <div class="milestone-body">
+    <div class="milestone-field">
+      <%= f.label :title, 'Sub-Task Title' %>
+      <%= f.text_field :title, class: "milestone-input" %>
+    </div>
+    <div class="milestone-field">
+      <%= f.label :description, 'Describe the sub-task or milestone' %>
+      <%= f.text_area :description, rows: 3, class: "milestone-input" %>
+    </div>
+  </div>
+</div>

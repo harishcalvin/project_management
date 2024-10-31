@@ -1,8 +1,7 @@
-<%= form_with(model: phase, class: "contents") do |form| %>
+<%= form_with(model: [phase.project, phase], local: true, class: "contents") do |form| %>
   <% if phase.errors.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
       <h2><%= pluralize(phase.errors.count, "error") %> prohibited this phase from being saved:</h2>
-
       <ul>
         <% phase.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -10,38 +9,273 @@
       </ul>
     </div>
   <% end %>
-
-  <div class="my-5">
-    <%= form.label :title %>
-    <%= form.text_field :title, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
+  <div class="form-section">
+    <%# <h2 class="section-title">Phase Information</h2> %>
+    <div class="form-group">
+      <label for="phase_title" class="form-label">Phase Name</label>
+      <%= form.text_field :title, placeholder: "Enter phase name", class: "form-input" %>
+    </div>
+    <div class="form-group">
+      <label for="phase_status" class="form-label">Phase Status</label>
+      <%= form.select :status, 
+                    options_for_select(Phase.statuses.keys.map { |status| [status.humanize, status] }, phase.status), 
+                    { include_blank: true }, 
+                    { class: "form-select" } %>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Phase Timeline</label>
+      <div class="date-range">
+        <div class="date-field">
+          <%= form.date_field :start_date, class: "form-input date-input", placeholder: "Start date" %>
+        </div>
+        <span class="date-separator">to</span>
+        <div class="date-field">
+          <%= form.date_field :end_end, class: "form-input date-input", placeholder: "End date" %>
+        </div>
+      </div>
+    </div>
   </div>
-
-  <div class="my-5">
-    <%= form.label :description %>
-    <%= form.text_area :description, rows: 4, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
+  <div class="form-section">
+    <h2 class="section-title">Descriptions</h2>
+    <div class="form-group">
+      <label for="phase_client_description" class="form-label">Client-Facing Description</label>
+      <%= form.text_area :client_description, rows: 4, placeholder: "Description visible to clients", class: "form-textarea" %>
+    </div>
+    <div class="form-group">
+      <label for="phase_description" class="form-label">Internal Description (Law Firm Only)</label>
+      <%= form.text_area :description, rows: 4, placeholder: "Detailed description for internal use", class: "form-textarea" %>
+    </div>
   </div>
-
-  <div class="my-5">
-    <%= form.label :status %>
-    <%= form.text_field :status, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
+  <div class="form-section">
+    <h2 class="section-title">Sub-Tasks / Milestones</h2>
+    <div class="milestone-actions">
+      <button type="button" id="add-internal-milestone" class="btn-add">
+        <span class="icon">&#10010;</span> Add Internal
+      </button>
+      <button type="button" id="add-client-milestone" class="btn-add">
+        <span class="icon">&#10010;</span> Add Client-Facing
+      </button>
+    </div>
+    <div class="view-mode">
+      <span class="view-mode-label">View Mode</span>
+      <div class="view-mode-options">
+        <label class="radio-label">
+          <input type="radio" name="milestone-view" value="all" checked>
+          <span class="radio-text">All</span>
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="milestone-view" value="internal">
+          <span class="radio-text">Internal Only</span>
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="milestone-view" value="client-facing">
+          <span class="radio-text">Client-Facing Only</span>
+        </label>
+      </div>
+    </div>
+    <div id="internal-milestones">
+      <%= form.fields_for :milestones, phase.milestones.where(internal: true) do |milestone_form| %>
+        <%= render 'milestone_fields', f: milestone_form, internal: true %>
+      <% end %>
+    </div>
+    <div id="client-milestones">
+      <%= form.fields_for :milestones, phase.milestones.where(client_facing: true) do |milestone_form| %>
+        <%= render 'milestone_fields', f: milestone_form, internal: false %>
+      <% end %>
+    </div>
   </div>
-
-  <div class="my-5">
-    <%= form.label :start_date %>
-    <%= form.date_field :start_date, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
+  <div class="form-actions">
+    <%= form.submit "Save Phase", class: "btn-submit" %>
+    <%= link_to "Back to phases", project_path(@phase.project, tab: 'phases'), class: "btn-submit" %>
   </div>
-
-  <div class="my-5">
-    <%= form.label :end_end %>
-    <%= form.date_field :end_end, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :project_id %>
-    <%= form.text_field :project_id, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
-  </div>
-
-  <div class="inline">
-    <%= form.submit class: "rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer" %>
-  </div>
+  <%= content_tag :div, id: "milestone-template", style: "display: none;" do %>
+    <%= form.fields_for :milestones, Milestone.new, child_index: 'NEW_RECORD' do |milestone_form| %>
+      <%= render 'milestone_fields', f: milestone_form, internal: true %>
+    <% end %>
+  <% end %>
 <% end %>
+<style>
+  .form-section {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .section-title {
+   font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  .form-group {
+    margin-bottom: 20px;
+  }
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+  }
+    .form-input, .form-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .form-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+    .form-textarea::placeholder {
+    color: #999;
+  }
+  .date-field {
+     flex: 1;
+  }
+  .date-range {
+    display: flex;
+    align-items: center;
+
+  }
+  .date-field {
+    flex: 1;
+  }
+  .date-separator {
+    margin: 0 10px;
+  }
+  .milestone-actions, .milestone-view {
+    margin-bottom: 15px;
+  }
+  .btn-add, .btn-submit {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  .btn-add:hover, .btn-submit:hover {
+    background-color: #f0f0f0;
+  }
+  .milestone-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .icon {
+    margin-right: 5px;
+    font-size: 16px;
+  }
+  .view-mode {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .view-mode-label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-right: 15px;
+  }
+  .view-mode-options {
+    display: flex;
+    gap: 15px;
+  }
+  .radio-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+  }
+  .radio-label input[type="radio"] {
+    margin-right: 5px;
+
+  }
+  .radio-text {
+    font-size: 14px;
+  }
+  [type="radio"]:checked {
+    color: #18181B;
+  }
+  .form-actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-top: 20px;
+  }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const milestoneTemplate = document.getElementById('milestone-template').innerHTML;
+
+    function addMilestone(containerId, internal) {
+      const container = document.getElementById(containerId);
+      const template = document.createElement('template');
+      const newIndex = new Date().getTime();
+      template.innerHTML = milestoneTemplate.replace(/NEW_RECORD/g, newIndex);
+
+      const newMilestone = template.content.firstElementChild;
+      if (!internal) {
+        newMilestone.querySelector('input[name*="[internal]"]').value = 'false';
+        newMilestone.querySelector('input[name*="[client_facing]"]').value = 'true';
+        newMilestone.querySelector('.milestone-type').classList.remove('internal');
+        newMilestone.querySelector('.milestone-type').classList.add('client-facing');
+        newMilestone.querySelector('.milestone-type').textContent = 'Client-facing';
+      }
+
+      container.appendChild(newMilestone);
+    }
+
+    document.getElementById('add-internal-milestone').addEventListener('click', function() {
+      addMilestone('internal-milestones', true);
+    });
+
+    document.getElementById('add-client-milestone').addEventListener('click', function() {
+      addMilestone('client-milestones', false);
+    });
+
+    document.addEventListener('click', function(event) {
+      if (event.target.classList.contains('close-icon')) {
+        const milestoneCard = event.target.closest('.milestone-card');
+        const destroyField = milestoneCard.querySelector('input[name*="_destroy"]');
+        if (destroyField) {
+          destroyField.value = '1';
+          milestoneCard.style.display = 'none';
+        } else {
+          milestoneCard.remove();
+        }
+      }
+    });
+
+    // Handle milestone view filtering
+    const milestoneViewRadios = document.querySelectorAll('input[name="milestone-view"]');
+    milestoneViewRadios.forEach(radio => {
+      radio.addEventListener('change', function() {
+        const internalMilestones = document.getElementById('internal-milestones');
+        const clientMilestones = document.getElementById('client-milestones');
+
+        if (this.value === 'all') {
+          internalMilestones.style.display = 'block';
+          clientMilestones.style.display = 'block';
+        } else if (this.value === 'internal') {
+          internalMilestones.style.display = 'block';
+          clientMilestones.style.display = 'none';
+        } else if (this.value === 'client-facing') {
+          internalMilestones.style.display = 'none';
+          clientMilestones.style.display = 'block';
+        }
+      });
+    });
+  });
+</script>
