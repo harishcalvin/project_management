@@ -1,9 +1,24 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+require "factory_bot_rails"
+include FactoryBot::Syntax::Methods
+
+# Clear existing data
+Milestone.destroy_all
+Phase.destroy_all
+Project.destroy_all
+
+# Create projects, phases, and milestones
+100.times do
+  project = create(:project)
+
+  # Random number of phases between 2 and 14
+  rand(2..14).times do
+    phase = create(:phase, project: project)
+
+    # Random number of milestones between 2 and 14 for each phase
+    rand(2..14).times do
+      create(:milestone, phase: phase)
+    end
+  end
+end
+
+puts "Seeded 5 projects with phases and milestones."

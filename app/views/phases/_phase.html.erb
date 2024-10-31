@@ -1,4 +1,4 @@
-<div id="<%= dom_id phase %>" class="phase-row">
+<div data-phase-id="<%= phase.id %>" class="phase-item">
   <div class="phase-main">
     <div class="phase-header">
       <%= phase_icon(phase) %>
@@ -68,19 +68,23 @@
       <h3 class="text-lg font-semibold mb-2">Milestones</h3>
       <div class="milestone-filters">
         <label class="milestone-filter">
-          <input type="radio" name="milestone-filter-<%= phase.id %>" value="all" checked> All
+          <input type="radio" name="milestone-filter-<%= phase.id %>" value="all" checked 
+                 onchange="filterMilestones(<%= phase.id %>, 'all')"> All
         </label>
         <label class="milestone-filter">
-          <input type="radio" name="milestone-filter-<%= phase.id %>" value="internal"> Internal
+          <input type="radio" name="milestone-filter-<%= phase.id %>" value="internal" 
+                 onchange="filterMilestones(<%= phase.id %>, 'internal')"> Internal
         </label>
         <label class="milestone-filter">
-          <input type="radio" name="milestone-filter-<%= phase.id %>" value="client"> Client
+          <input type="radio" name="milestone-filter-<%= phase.id %>" value="client" 
+                 onchange="filterMilestones(<%= phase.id %>, 'client')"> Client
         </label>
       </div>
     </div>
     <div class="milestone-list">
       <% phase.milestones.each do |milestone| %>
-        <div class="milestone-item <%= 'internal' if milestone.internal %> <%= 'client' if milestone.client_facing %>">
+        <div class="milestone-item <%= milestone.internal ? 'milestone-internal' : 'milestone-client' %>"
+             data-milestone-type="<%= milestone.internal ? 'internal' : 'client' %>">
           <div class="milestone-header">
             <h4 class="milestone-title"><%= milestone.title %></h4>
             <span class="milestone-type <%= milestone.internal ? 'internal' : 'client' %>">
@@ -261,23 +265,18 @@
     }
   }
 
-  // Add this JavaScript to handle milestone filtering
-  document.addEventListener('DOMContentLoaded', function() {
-    var filterInputs = document.querySelectorAll('.milestone-filter input');
-    filterInputs.forEach(function(input) {
-      input.addEventListener('change', function() {
-        var phaseId = this.name.split('-').pop();
-        var filterValue = this.value;
-        var milestoneItems = document.querySelectorAll('#phase-details-' + phaseId + ' .milestone-item');
+  function filterMilestones(phaseId, filterType) {
+    const milestoneList = document.querySelector(`#phase-details-${phaseId} .milestone-list`);
+    const milestones = milestoneList.querySelectorAll('.milestone-item');
 
-        milestoneItems.forEach(function(item) {
-          if (filterValue === 'all' || item.classList.contains(filterValue)) {
-            item.style.display = 'block';
-          } else {
-            item.style.display = 'none';
-          }
-        });
-      });
+    milestones.forEach(milestone => {
+      if (filterType === 'all') {
+        milestone.style.display = 'block';
+      } else if (filterType === 'internal') {
+        milestone.style.display = milestone.classList.contains('milestone-internal') ? 'block' : 'none';
+      } else if (filterType === 'client') {
+        milestone.style.display = milestone.classList.contains('milestone-client') ? 'block' : 'none';
+      }
     });
-  });
+  }
 </script>
