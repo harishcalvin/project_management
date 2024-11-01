@@ -7,7 +7,11 @@
 - **Add milestones to each phases** - each phases's milestone have Internal (team-only) or Client (client-only view) milestones.
 - **Edit & Delete** – Full control to edit or remove anything you need
 
-## Images
+## Demo
+
+https://github.com/user-attachments/assets/b846f0b0-a47e-4784-8bb5-3c8cfd2cb03f
+
+## Preview Images
 
 1. Home page
 
